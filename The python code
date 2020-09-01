@@ -1,0 +1,105 @@
+import pyttsx3
+import speech_recognition as sr
+import datetime
+import wikipedia
+import pyaudio
+import webbrowser
+import os
+import sys
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+#print(voices[0].id)
+engine.setProperty('voice', voices[0].id)
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour>=0 and hour<12:
+        speak("Good Morning!")
+
+    elif hour>=12 and hour<18:
+        speak("Good Afternoon")
+
+    else:
+        speak("Good Evening!")
+
+    speak("Hello, I am Meghan,and I am your personal assistant. You can call me Maggie!")
+    speak("Tell me, How may I help you?")
+
+def takeCommand():
+    #It takes microphone input from the user and returns string output
+
+    r = sr.Recognizer()                                                                                   
+    with sr.Microphone() as source:                                                                       
+        print("Listening...")
+        r.pause_threshold =  1
+        audio = r.listen(source)
+
+    try:
+        print("Recognizing...")
+        query = r.recognize_google(audio, language='en-in')
+        print(f"User said: {query}\n")
+
+    except ValueError:
+        #print(e)
+        speak('Sorry! I didn/t get that. Say that again please')
+        print('Sorry! I didn/t get that. Say that again please')
+        return "None"
+    return query
+
+if __name__ == "__main__":
+    wishMe()
+    while True:
+        query = takeCommand().lower()
+
+        #Logic for executing tasks based on query
+        if 'wikipedia' in query:
+            speak('Searching...')
+            query = query.replace("wikipedia", "")
+            results = wikipedia.summary(query, sentences=3)
+            speak("According to Wikipedia")
+            print(results)
+            speak(results)
+
+        elif 'open youtube' in query:
+            webbrowser.open("youtube.com")
+
+        elif 'open facebook' in query:
+            webbrowser.open("facebook.com")
+        
+        elif 'open instagram' in query:
+            webbrowser.open("instagram.com") 
+
+        elif 'open gmail' in query:
+            webbrowser.open("gmail.com")
+        
+        elif 'open google' in query:
+            webbrowser.open("google.com")
+        
+        elif 'hello' in query:
+            speak('Hello Sir, How is everything?')
+
+        elif 'bye' in query:
+            speak('Bye Sir, have a good day.')
+            sys.exit()
+
+        elif 'buy' in query:
+            speak('Bye Sir, have a good day.')
+            sys.exit()
+
+        elif 'Bye' in query or 'See you' in query or 'shut up' in query:
+            speak('alright')
+            speak('Goodbye')
+            sys.exit()
+        elif 'the time' in query:
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            speak(f"At the moment, the time is {strTime}")
+
+        elif 'Tell me a joke' in query:
+            speak("Okay, what did the Earth tell to other planets? You all have no life.")
+
